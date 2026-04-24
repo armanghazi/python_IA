@@ -10,12 +10,12 @@ def validar_parametros(func):
         
         for valor in args:
             if valor < 0:
-                raise ValueError("Todos los números deben ser positivos")
+                raise TypeError("Todos los números deben ser positivos")
 
         
         for valor in kwargs.values():
             if valor < 0:
-                raise ValueError("Todos los números deben ser positivos")
+                raise TypeError("Todos los números deben ser positivos")
 
         return func(*args, **kwargs)
 

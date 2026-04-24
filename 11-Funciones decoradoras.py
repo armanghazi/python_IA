@@ -1,32 +1,33 @@
-#Ejercicio: Decorador de Validación de Parámetros
+
+#Ejercicio1: Decorador de Validación de Parámetros
 """
 Crea un decorador llamado validar_parametros que tome una función y verifique si los parámetros 
 cumplen ciertas condiciones antes de llamar a la función. 
 
 Por ejemplo, puedes implementar una validación que asegure que los números ingresados son positivos.
 """
-def validar_parametros(func):
+def valida_num_entrada(func):
     def wrapper(*args, **kwargs):
-        
-        for valor in args:
-            if valor < 0:
-                raise TypeError("Todos los números deben ser positivos")
-
-        
-        for valor in kwargs.values():
-            if valor < 0:
-                raise TypeError("Todos los números deben ser positivos")
-
+        for arg in args:
+            if not isinstance(arg, (int, float)):
+                raise TypeError(f"El argumento por posición {arg} no es un número")
+        for clave, valor in kwargs.items():
+            if not isinstance(valor, (int, float)):
+                raise TypeError(f"El argumento por clave {clave} = {valor} no es un número")
         return func(*args, **kwargs)
-
     return wrapper
 
-@validar_parametros
-def suma(a, b):
-    return a + b
+@valida_num_entrada
+def evaluar_cuadratica(a, b, c, x):
+    '''
+    a, b, c: valores numéricos de los coeficientes de una ecuación
+    de segundo grado
+    x: valor de la variable x.
+    '''
+    solucion = a*x*x+b*x+c
+    return solucion
 
-print(suma(5, 3))   
-print(suma(-1, 3))  
+evaluar_cuadratica(3, 2, c="5", x=4)
 
 
 #Ejercicio 2: Decorador para Logs
@@ -35,47 +36,28 @@ Implementa un decorador llamado registro que registre información sobre la llam
 como el nombre de la función, los argumentos y el resultado. Imprime esta información en la consola 
 cada vez que la función decorada se ejecuta.
 """
+
 def registro(func):
     def wrapper(*args, **kwargs):
-        print(f"Nombre de la función: {func.__name__}")
-        print(f"Argumentos posicionales: {args}")
-        print(f"Argumentos nombrados: {kwargs}")
-
-        resultado = func(*args, **kwargs)
-
-        print(f"Resultado: {resultado}")
-        print("-" * 30)
-
-        return resultado
+        salida = func(*args, **kwargs)
+        print(f"La función {func.__name__} devuelve {salida} para las entradas:")
+        for arg in args:
+            print(f"    {arg}")
+        for clave, valor in kwargs.items():
+            print(f"   {clave} = {valor}")
+        return salida
     return wrapper
 
+@valida_num_entrada
 @registro
-def suma(a, b):
-    return a + b
+def evaluar_cuadratica(a, b, c, x):
+    '''
+    a, b, c: valores numéricos de los coeficientes de una ecuación
+    de segundo grado
+    x: valor de la variable x.
+    '''
+    solucion = a*x*x+b*x+c
+    return solucion
 
-suma(-2, 3)
 
-# Construir un decorador que compruebe que la salida de una función sea un número
-
-
-def verificar_numero(func):
-    def wrapper(*args, **kwargs):
-        resultado = func(*args, **kwargs)
-
-        if not isinstance(resultado, (int, float)):
-            raise TypeError("El resultado debe ser un número")
-
-        return resultado
-    return wrapper
-
-@verificar_numero
-def dividir(a, b):
-    return a / b
-
-print(dividir(10, 2))   
-
-@verificar_numero
-def saludo():
-    return "Hola"
-
-saludo()
+evaluar_cuadratica(3, 2, c=5, x=4)

@@ -138,9 +138,14 @@ primeras_lineas = lineas_quijote[:200]
 
 # Crear un generador que busca líneas que contengan una subcadena
 
-archivo = open("datos/quijote.txt", 'r', encoding="utf-8")
+"""archivo = open("datos/quijote.txt", 'r', encoding="utf-8")
 lineas_quijote = archivo.readlines()
-archivo.close()
+archivo.close()"""
+
+with open("datos/quijote.txt", 'r', encoding="utf-8") as archivo:
+    lineas_quijote = archivo.readlines()
+
+len(lineas_quijote)
 
 primeras_lineas = lineas_quijote[:200]
 

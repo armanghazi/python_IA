@@ -159,3 +159,144 @@ print(f"¿Dónde está el secretario? {secretario.esta_en()}")
 # Vamos a encapsular "trabajando", "sueldo_hora"... en el ejercicio del personal
 
 
+class Persona:
+    def __init__(self, nombre, apellido1, apellido2, sueldo_hora):
+        # Atributos Públicos
+        self.nombre = nombre
+        self.apellido1 = apellido1
+        self.apellido2 = apellido2
+        
+        # Atributos Privados (Encapsulados)
+        self.__trabajando = False
+        self.__sueldo_hora = sueldo_hora
+        self.__ubicacion = "Rentería"
+
+    # --- Encapsulamiento de 'trabajando' ---
+    @property
+    def trabajando(self):
+        """Getter para el estado laboral"""
+        return self.__trabajando
+
+    @trabajando.setter
+    def trabajando(self, estado):
+        """Setter con validación de tipo booleano"""
+        if isinstance(estado, bool):
+            self.__trabajando = estado
+        else:
+            print("Error: El estado de trabajo debe ser True o False")
+
+    # --- Encapsulamiento de 'sueldo_hora' ---
+    @property
+    def sueldo_hora(self):
+        """Getter para el sueldo"""
+        return self.__sueldo_hora
+
+    @sueldo_hora.setter
+    def sueldo_hora(self, valor):
+        """Setter con validación de rango (similar a la edad)"""
+        if valor < 0:
+            raise ValueError("El sueldo no puede ser negativo")[cite: 1]
+        self.__sueldo_hora = valor
+
+    # Métodos de comportamiento
+    def presentarse(self):
+        print(f'Hola, mi nombre es {self.nombre} {self.apellido1} {self.apellido2}')
+
+    def ficha(self):
+        """Cambia el estado de trabajo de forma interna"""
+        self.__trabajando = not self.__trabajando
+
+    def sale_de_viaje(self, nueva_ubicacion):
+        print(f"{self.__ubicacion} -----> {nueva_ubicacion}")
+        self.__ubicacion = nueva_ubicacion
+
+    def donde_esta(self):
+        return self.__ubicacion
+
+# --- Prueba del código ---
+
+director = Persona('Juan', 'Pérez', 'López', 50.0)
+
+# Acceso a través de los decoradores property
+print(f"¿Está trabajando {director.nombre}? {director.trabajando}")
+director.trabajando = True  # Usa el setter
+print(f"Sueldo actual: {director.sueldo_hora}€")
+
+# Intentar modificar con un valor inválido
+try:
+    director.sueldo_hora = -10
+except ValueError as e:
+    print(f"Error detectado: {e}")[cite: 1]
+
+# El acceso directo a __trabajando fallaría o no afectaría al atributo real
+# director.__trabajando = "No quiero trabajar" # Esto crearía un atributo nuevo, no el privado
+
+from abc import ABC, abstractmethod
+
+# Clase Abstracta: No se puede instanciar directamente
+class Empleado(ABC):
+    def __init__(self, nombre, apellido, sueldo_hora):
+        self.nombre = nombre
+        self.apellido = apellido
+        # Atributos encapsulados (Privados)
+        self.__sueldo_hora = sueldo_hora
+        self.__trabajando = False
+
+    # --- Encapsulamiento de sueldo_hora ---
+    @property
+    def sueldo_hora(self):
+        return self.__sueldo_hora
+
+    @sueldo_hora.setter
+    def sueldo_hora(self, valor):
+        if valor < 0:
+            raise ValueError("El sueldo no puede ser negativo")[cite: 1]
+        self.__sueldo_hora = valor
+
+    # --- Encapsulamiento de trabajando ---
+    @property
+    def trabajando(self):
+        return self.__trabajando
+
+    @trabajando.setter
+    def trabajando(self, estado):
+        if isinstance(estado, bool):
+            self.__trabajando = estado
+
+    # Método abstracto: obliga a las subclases a definir su propia lógica
+    @abstractmethod
+    def realizar_tarea(self):
+        pass
+
+    def fichar(self):
+        self.__trabajando = not self.__trabajando
+        estado = "entrando a" if self.__trabajando else "saliendo de"
+        print(f"{self.nombre} está {estado} trabajar.")
+
+# --- Subclases específicas ---
+
+class Directivo(Empleado):
+    def realizar_tarea(self):
+        return f"{self.nombre} está supervisando la estrategia."
+
+class Oficinista(Empleado):
+    def realizar_tarea(self):
+        return f"{self.nombre} está procesando documentos."
+
+class Peon(Empleado):
+    def realizar_tarea(self):
+        return f"{self.nombre} está operando maquinaria."
+
+# --- Pruebas de instanciación ---
+
+# jefe = Empleado("Carlos", "García", 20) 
+# ^ Esto lanzaría un error: Can't instantiate abstract class Empleado
+
+director = Directivo("Elena", "Sanz", 60.5)
+administrativo = Oficinista("Luis", "Pérez", 15.0)
+operario = Peon("Mikel", "Etxeberria", 12.0)
+
+# Uso de los atributos encapsulados
+director.fichar()
+print(f"Sueldo de {director.nombre}: {director.sueldo_hora}€")[cite: 1]
+print(operario.realizar_tarea())
